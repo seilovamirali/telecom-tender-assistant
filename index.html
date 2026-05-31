@@ -11,22 +11,27 @@
 <!-- Topbar -->
 <div id="topbar">
   <div class="logo">
-    <svg viewBox="0 0 28 28" fill="none">
-      <rect width="28" height="28" rx="7" fill="#1D9E75"/>
-      <path d="M7 14h3l2-5 3 10 2-7 2 4 1-2h1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-    Tender AI
+    <div class="logo-icon">
+      <svg viewBox="0 0 18 18" fill="none">
+        <path d="M2 9h3l2-5 3 10 2-7 2 4 1-2" stroke="white" stroke-width="1.8"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <span class="logo-text">Tender<span>AI</span></span>
   </div>
+
   <span class="platform-count" id="active-count">19 площадок</span>
   <div class="topbar-spacer"></div>
-  <button class="icon-btn outlined" onclick="showApiModal()">
+
+  <button class="topbar-btn" onclick="showApiModal()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
     </svg>
     API ключ
   </button>
-  <button class="icon-btn" id="notif-btn" onclick="switchTab('notifications')">
-    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+
+  <button id="notif-btn" onclick="switchTab('notifications')">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
       <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
       <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
     </svg>
@@ -55,9 +60,8 @@
   <!-- Sidebar -->
   <div id="sidebar">
     <div class="sidebar-controls">
-      <span class="sidebar-link" onclick="toggleAllPlatforms(true)">Все</span>
-      <span class="sidebar-sep">|</span>
-      <span class="sidebar-link" onclick="toggleAllPlatforms(false)">Снять</span>
+      <button class="sidebar-select-all" onclick="toggleAllPlatforms(true)">Выбрать все</button>
+      <button class="sidebar-select-all" onclick="toggleAllPlatforms(false)">Снять все</button>
     </div>
     <div id="sidebar-platforms"></div>
   </div>
@@ -67,13 +71,15 @@
 
     <!-- Filter bar -->
     <div id="filter-bar">
-      <span class="filter-label">Фильтры:</span>
+      <span class="filter-label">Фильтры</span>
+
       <select class="filter-select" id="f-date" onchange="updateFilterStyle()">
         <option value="">Дата: любая</option>
         <option value="7">За 7 дней</option>
         <option value="30">За 30 дней</option>
         <option value="90">За 90 дней</option>
       </select>
+
       <select class="filter-select" id="f-sum" onchange="updateFilterStyle()">
         <option value="">Сумма: любая</option>
         <option value="1">до 1 млн ₸</option>
@@ -81,6 +87,7 @@
         <option value="100">до 100 млн ₸</option>
         <option value="999">свыше 100 млн ₸</option>
       </select>
+
       <select class="filter-select" id="f-region" onchange="updateFilterStyle()">
         <option value="">Регион: все</option>
         <option value="Астана">Астана</option>
@@ -101,8 +108,10 @@
         <option value="СКО">СКО</option>
         <option value="Туркестанская">Туркестанская обл.</option>
       </select>
-      <input class="filter-input" id="f-ktru" placeholder="КТРУ/КПВЭД"
+
+      <input class="filter-input" id="f-ktru" placeholder="КТРУ / КПВЭД"
              oninput="updateFilterStyle()" onchange="updateFilterStyle()">
+
       <span class="filter-clear" onclick="clearFilters()">✕ Сбросить</span>
     </div>
 
@@ -110,15 +119,16 @@
     <div class="tab-panel active" id="panel-search">
       <div id="messages">
         <div class="empty-state" id="empty-hint">
-          <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
           </svg>
-          <p>Введите запрос для поиска тендеров на 19 площадках Казахстана.<br>
-             Или нажмите <b>AI</b> для автоматического подбора ключевых слов.</p>
+          <div class="empty-state-title">Начните поиск тендеров</div>
+          <p>Введите запрос — ассистент сформирует ссылки на все активные площадки Казахстана. Или нажмите <b>AI подбор</b> для автоматического подбора ключевых слов.</p>
         </div>
       </div>
+
       <div id="input-area">
-        <div class="input-row">
+        <div class="input-wrapper">
           <button class="input-btn" id="ai-btn" onclick="runAISuggest()">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
@@ -126,15 +136,17 @@
             AI подбор
           </button>
           <textarea id="main-input" rows="1"
-            placeholder="Например: IP VPN для офисов, волоконно-оптические каналы…"
+            placeholder="Например: IP VPN для офисов, ВОЛС, SIP-телефония…"
             onkeydown="handleInputKey(event)"
             oninput="autoResize(this)"></textarea>
-          <button class="input-btn" id="search-btn" onclick="runSearch()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-            </svg>
-            Найти
-          </button>
+          <div class="input-actions">
+            <button class="input-btn" id="search-btn" onclick="runSearch()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+              Найти
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -143,7 +155,7 @@
     <div class="tab-panel" id="panel-history">
       <div class="panel-header">
         <span class="panel-title">История поисков</span>
-        <button class="panel-action" onclick="clearHistory()">Очистить</button>
+        <button class="panel-action" onclick="clearHistory()">Очистить всё</button>
       </div>
       <div id="hist-list"></div>
     </div>
@@ -152,7 +164,7 @@
     <div class="tab-panel" id="panel-favorites">
       <div class="panel-header">
         <span class="panel-title">Избранные запросы</span>
-        <button class="panel-action" onclick="clearFavorites()">Очистить</button>
+        <button class="panel-action" onclick="clearFavorites()">Очистить всё</button>
       </div>
       <div id="fav-list"></div>
     </div>
@@ -168,10 +180,10 @@
 
     <!-- Settings panel -->
     <div class="tab-panel" id="panel-settings">
-      <h2 style="font-size:15px;font-weight:700;margin-bottom:16px;">Настройки</h2>
+      <h2 style="font-size:17px;font-weight:700;margin-bottom:20px;letter-spacing:-0.02em;">Настройки</h2>
 
       <div class="settings-section">
-        <div class="settings-title">Claude API (AI-подбор ключевых слов)</div>
+        <div class="settings-title">Claude API — AI-подбор ключевых слов</div>
         <div class="key-input-group">
           <input class="key-input" type="password" id="s-claude-key" placeholder="sk-ant-api03-…">
           <button class="key-save" onclick="saveClaudeKeySettings()">Сохранить</button>
@@ -180,10 +192,10 @@
       </div>
 
       <div class="settings-section">
-        <div class="settings-title">goszakup.gov.kz GraphQL токен (v1.5)</div>
-        <p style="font-size:12px;color:var(--gray-400);margin-bottom:8px;line-height:1.5;">
-          Получите токен в Личном кабинете на goszakup.gov.kz → Настройки → API.
-          После ввода — лоты будут показаны прямо в ассистенте (без перехода на портал).
+        <div class="settings-title">goszakup.gov.kz — GraphQL API токен</div>
+        <p style="font-size:12.5px;color:var(--gray-400);margin-bottom:10px;line-height:1.6;">
+          Получите токен: Личный кабинет → Настройки → Интеграция → API.
+          После ввода лоты будут отображаться прямо в ассистенте.
         </p>
         <div class="key-input-group">
           <input class="key-input" type="password" id="s-gz-token" placeholder="Bearer token…">
@@ -195,8 +207,10 @@
       <div class="settings-section">
         <div class="settings-title">Поведение</div>
         <div class="setting-row">
-          <div><div class="setting-label">Симуляция новых тендеров</div>
-            <div class="setting-sub">Тестовые уведомления каждые ~45 сек</div></div>
+          <div>
+            <div class="setting-label">Симуляция новых тендеров</div>
+            <div class="setting-sub">Тестовые уведомления каждые ~45 сек</div>
+          </div>
           <label class="toggle">
             <input type="checkbox" id="s-simulate" checked onchange="toggleSimulation()">
             <span class="toggle-slider"></span>
@@ -206,36 +220,41 @@
 
       <div class="settings-section">
         <div class="settings-title">О продукте</div>
-        <div style="font-size:13px;color:var(--gray-500);line-height:1.7;">
-          <div><b>Telecom Tender Assistant v1.5</b></div>
-          <div>19 площадок · AI-подбор · goszakup GraphQL · История · Экспорт CSV</div>
-          <div style="margin-top:6px;font-size:12px;">Специализация: IP VPN · ВОЛС · Интернет · SIP-телефония · VSAT · ЦОД · Видеонаблюдение</div>
+        <div style="font-size:13px;color:var(--gray-500);line-height:1.8;">
+          <div style="font-weight:700;color:var(--gray-800);font-size:14px;">Telecom Tender Assistant v1.5</div>
+          <div style="margin-top:4px;">19 площадок · AI-подбор · goszakup GraphQL · История · Экспорт CSV</div>
+          <div style="margin-top:8px;font-size:12px;color:var(--gray-400);">
+            IP VPN · ВОЛС · Интернет ШПД · SIP · VSAT · ЦОД · CCTV · MPLS
+          </div>
         </div>
       </div>
     </div>
 
-  </div><!-- /content -->
-</div><!-- /main -->
+  </div>
+</div>
 
-<!-- Drawer overlay & drawer -->
+<!-- Drawer -->
 <div id="drawer-overlay"></div>
 <div id="drawer">
   <div id="drawer-header">
-    <div id="drawer-title">Превью</div>
-    <button id="drawer-close" onclick="closeDrawer()">×</button>
+    <span class="drawer-badge">Превью</span>
+    <div id="drawer-title">Площадка</div>
+    <button id="drawer-close" onclick="closeDrawer()">✕</button>
   </div>
   <div id="drawer-body"></div>
   <div id="drawer-footer">
-    <a id="drawer-open-link" href="#" target="_blank" class="drawer-open-btn">Открыть реальный портал →</a>
+    <a id="drawer-open-link" href="#" target="_blank" class="drawer-open-btn">
+      Открыть реальный портал →
+    </a>
   </div>
 </div>
 
 <!-- API Key Modal -->
 <div id="modal-overlay">
   <div id="modal">
-    <button class="modal-close-btn" onclick="closeApiModal()">×</button>
+    <button class="modal-close-btn" onclick="closeApiModal()">✕</button>
     <h3>Claude API ключ</h3>
-    <p>Нужен для AI-подбора ключевых слов. Хранится только в вашем браузере (localStorage).</p>
+    <p>Нужен для AI-подбора ключевых слов. Хранится только в вашем браузере (localStorage), не передаётся третьим лицам.</p>
     <div class="key-input-group">
       <input class="key-input" type="password" id="modal-api-key" placeholder="sk-ant-api03-…">
       <button class="key-save" onclick="saveApiKeyFromModal()">Сохранить</button>
@@ -244,7 +263,6 @@
   </div>
 </div>
 
-<!-- Toast -->
 <div id="toast"></div>
 
 <script src="js/platforms.js"></script>

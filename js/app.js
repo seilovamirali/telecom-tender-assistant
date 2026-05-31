@@ -16,20 +16,29 @@ const state = {
 // ─── Sidebar ─────────────────────────────────────────────────────────────────
 
 function renderSidebar() {
+  const colorMap = { gov:'#16A872', etp:'#3B82F6', corp:'#F05A30', bank:'#F59E0B' };
   const el = document.getElementById('sidebar-platforms');
   el.innerHTML = ['gov', 'etp', 'corp', 'bank'].map(g => {
     const list = PLATFORMS.filter(p => p.group === g);
     if (!list.length) return '';
     const meta = GROUP_META[g];
+    const color = colorMap[g];
     const items = list.map(p => `
       <div class="platform-item">
         <input type="checkbox" ${state.activePlatforms.has(p.id) ? 'checked' : ''}
           onchange="togglePlatform('${p.id}', this.checked)">
-        <span class="platform-dot" style="background:${meta.color}"></span>
         <span class="platform-name">${p.short}</span>
         ${p.tag ? `<span class="platform-tag tag-api">${p.tag}</span>` : ''}
       </div>`).join('');
-    return `<div class="sidebar-group-label">${meta.label}</div>${items}<div class="sidebar-divider"></div>`;
+    return `
+      <div class="sidebar-group">
+        <div class="sidebar-group-label">
+          <span class="sidebar-group-label-dot" style="background:${color}"></span>
+          ${meta.label}
+        </div>
+        ${items}
+      </div>
+      <div class="sidebar-divider"></div>`;
   }).join('');
   updateActiveCount();
 }
@@ -138,13 +147,15 @@ function renderSearchResults(results, query, filters) {
   const hasFilters = Object.values(filters).some(Boolean);
   const hasGZToken = !!state.goszakupToken && state.activePlatforms.has('goszakup');
 
+  const colorMap = { gov:'#16A872', etp:'#3B82F6', corp:'#F05A30', bank:'#F59E0B' };
   const cards = results.map(({ platform: p, url }) => {
-    const meta = GROUP_META[p.group];
+    const meta  = GROUP_META[p.group];
+    const color = colorMap[p.group];
     return `
-      <div class="result-card">
-        <div class="rc-type" style="color:${meta.color}">
-          <span class="rc-dot" style="background:${meta.color}"></span>
-          ${meta.label}${p.tag ? ` <span style="font-size:9px;background:#FEF3C7;color:#92400E;padding:0 4px;border-radius:3px;">${p.tag}</span>` : ''}
+      <div class="result-card" style="--card-accent:${color}">
+        <div class="rc-group-label" style="color:${color}">
+          <span class="rc-group-dot" style="background:${color}"></span>
+          ${meta.label}${p.tag ? ` <span class="platform-tag tag-api" style="margin-left:2px">${p.tag}</span>` : ''}
         </div>
         <div class="rc-name">${p.name}</div>
         <div class="rc-actions">
