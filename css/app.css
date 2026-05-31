@@ -831,8 +831,27 @@ body {
 }
 .notif-indicator.read { background: var(--gray-300); }
 .notif-title { font-weight: 600; font-size: 13px; color: var(--gray-900); }
-.notif-desc { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
-.notif-time { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+.notif-desc { font-size: 12px; color: var(--gray-500); margin-top: 2px; line-height: 1.4; }
+.notif-platform { font-size: 10.5px; color: var(--accent); font-weight: 600; margin-top: 3px; letter-spacing: 0.02em; }
+.notif-time { font-size: 11px; color: var(--gray-400); margin-top: 3px; }
+.notif-actions { display: flex; gap: 6px; margin-top: 9px; flex-wrap: wrap; }
+.notif-action-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 5px 11px; border-radius: 20px;
+  font-size: 11.5px; font-weight: 600;
+  border: none; cursor: pointer; text-decoration: none;
+  transition: all var(--transition); font-family: inherit;
+}
+.notif-btn-open {
+  background: var(--accent); color: white;
+  box-shadow: 0 1px 4px rgba(22,168,114,0.3);
+}
+.notif-btn-open:hover { background: var(--accent-hover); box-shadow: 0 2px 8px rgba(22,168,114,0.4); }
+.notif-btn-search {
+  background: var(--gray-100); color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+}
+.notif-btn-search:hover { background: var(--etp-bg); color: var(--etp); border-color: #BFDBFE; }
 
 /* ── Settings ── */
 .settings-section { margin-bottom: 24px; }

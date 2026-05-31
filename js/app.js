@@ -115,7 +115,7 @@ async function runSearch(overrideQuery) {
 
   renderSearchResults(results, q, filters);
   addToHistory(q, filters);
-  addNotification(`Поиск: «${q}»`, `${results.length} площадок`);
+  addNotification(`Поиск: «${q}»`, `${results.length} площадок`, { type: 'info', query: q });
 
   if (!overrideQuery) {
     document.getElementById('main-input').value = '';
@@ -481,7 +481,7 @@ function saveQuery(query) {
   localStorage.setItem('savedQueries', JSON.stringify(state.savedQueries));
   renderFavorites();
   renderHistory();
-  addNotification('Запрос сохранён', `«${query}»`);
+  addNotification('Запрос сохранён', `«${query}»`, { type: 'info', query });
   showToast('Сохранено в избранное ☆');
 }
 
@@ -524,10 +524,20 @@ function clearFavorites() {
 
 // ─── Notifications ────────────────────────────────────────────────────────────
 
-function addNotification(title, description) {
+// opts: { query, platformId, url, type }
+// type: 'tender' | 'deadline' | 'info'
+function addNotification(title, description, opts = {}) {
+  const p = opts.platformId ? PLATFORMS.find(x => x.id === opts.platformId) : null;
+  const url = opts.url || (p && opts.query ? p.search(opts.query) : null);
   state.notifications.unshift({
-    id: Date.now(), title, description, read: false,
-    at: new Date().toLocaleTimeString('ru', { hour:'2-digit', minute:'2-digit' }),
+    id: Date.now(),
+    title, description,
+    read: false,
+    type: opts.type || 'info',
+    query: opts.query || null,
+    platformId: opts.platformId || null,
+    url: url || null,
+    at: new Date().toLocaleTimeString('ru', { hour: '2-digit', minute: '2-digit' }),
   });
   if (state.notifications.length > 60) state.notifications.pop();
   localStorage.setItem('notifications', JSON.stringify(state.notifications));
@@ -547,15 +557,39 @@ function renderNotifications() {
     return;
   }
 
-  list.innerHTML = state.notifications.map(n => `
-    <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markRead(${n.id})">
-      <div class="notif-indicator ${n.read ? 'read' : ''}"></div>
-      <div>
-        <div class="notif-title">${escHtml(n.title)}</div>
-        <div class="notif-desc">${escHtml(n.description)}</div>
-        <div class="notif-time">${n.at}</div>
-      </div>
-    </div>`).join('');
+  const typeIcon = { tender: '📢', deadline: '⏰', info: 'ℹ️' };
+
+  list.innerHTML = state.notifications.map(n => {
+    const icon = typeIcon[n.type] || 'ℹ️';
+    const platform = n.platformId ? PLATFORMS.find(x => x.id === n.platformId) : null;
+    const platformName = platform ? platform.name : '';
+
+    const actions = [];
+    if (n.url) {
+      actions.push(`<a class="notif-action-btn notif-btn-open" href="${escHtml(n.url)}" target="_blank" onclick="markRead(${n.id})">↗ Открыть на портале</a>`);
+    }
+    if (n.query) {
+      actions.push(`<button class="notif-action-btn notif-btn-search" onclick="notifSearch('${escAttr(n.query)}',${n.id})">🔍 Поиск в приложении</button>`);
+    }
+
+    return `
+      <div class="notif-item ${n.read ? '' : 'unread'}" onclick="markRead(${n.id})">
+        <div class="notif-indicator ${n.read ? 'read' : ''}"></div>
+        <div style="flex:1;min-width:0;">
+          <div class="notif-title">${icon} ${escHtml(n.title)}</div>
+          <div class="notif-desc">${escHtml(n.description)}</div>
+          ${platformName ? `<div class="notif-platform">${escHtml(platformName)}</div>` : ''}
+          <div class="notif-time">${n.at}</div>
+          ${actions.length ? `<div class="notif-actions" onclick="event.stopPropagation()">${actions.join('')}</div>` : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function notifSearch(query, notifId) {
+  markRead(notifId);
+  switchTab('search');
+  runSearch(query);
 }
 
 function markRead(id) {
@@ -570,21 +604,51 @@ function markAllRead() {
   renderNotifications();
 }
 
-// Simulation
+// ─── Simulation ───────────────────────────────────────────────────────────────
 const SIM_SAMPLES = [
-  ['Новый тендер: IP VPN', 'ЦОН Алматы — 500 Мбит · 12.5 млн ₸ · goszakup'],
-  ['Новый тендер: ВОЛС', 'КазМунайГаз — прокладка 50 км · 85 млн ₸'],
-  ['Дедлайн через 24 ч', 'Интернет для школ ВКО · zakup.sk.kz'],
-  ['Новый тендер: VSAT', 'МинСельхоз — спутниковый интернет СНП · 34 млн ₸'],
-  ['Новый тендер: SIP', 'Министерство — IP-телефония 500 номеров · 8 млн ₸'],
+  {
+    title: 'Новый тендер: IP VPN',
+    desc:  'ЦОН Алматы — 500 Мбит · 12.5 млн ₸',
+    type: 'tender', platformId: 'goszakup', query: 'IP VPN',
+  },
+  {
+    title: 'Новый тендер: ВОЛС',
+    desc:  'КазМунайГаз — прокладка ВОЛС 50 км · 85 млн ₸',
+    type: 'tender', platformId: 'goszakup', query: 'ВОЛС оптоволокно',
+  },
+  {
+    title: 'Дедлайн через 24 ч',
+    desc:  'Интернет-канал для школ ВКО · конец приёма заявок',
+    type: 'deadline', platformId: 'zakup-sk', query: 'широкополосный доступ интернет',
+  },
+  {
+    title: 'Новый тендер: VSAT',
+    desc:  'МинСельхоз — спутниковый интернет для СНП · 34 млн ₸',
+    type: 'tender', platformId: 'goszakup', query: 'VSAT спутниковая связь',
+  },
+  {
+    title: 'Новый тендер: SIP-телефония',
+    desc:  'Министерство — IP-АТС 500 номеров · 8 млн ₸',
+    type: 'tender', platformId: 'goszakup', query: 'IP телефония SIP АТС',
+  },
+  {
+    title: 'Новый тендер: Видеонаблюдение',
+    desc:  'Акимат Астаны — CCTV 200 камер · 22 млн ₸',
+    type: 'tender', platformId: 'zakup-sk', query: 'видеонаблюдение CCTV IP камеры',
+  },
+  {
+    title: 'Дедлайн через 24 ч',
+    desc:  'Казахтелеком — аренда каналов MPLS · zakup.sk.kz',
+    type: 'deadline', platformId: 'zakup-sk', query: 'MPLS VPN каналы связи',
+  },
 ];
 
 function startSimulation() {
   if (state.simInterval) return;
   state.simInterval = setInterval(() => {
     if (document.getElementById('s-simulate')?.checked) {
-      const [t, d] = SIM_SAMPLES[Math.floor(Math.random() * SIM_SAMPLES.length)];
-      addNotification(t, d);
+      const s = SIM_SAMPLES[Math.floor(Math.random() * SIM_SAMPLES.length)];
+      addNotification(s.title, s.desc, { type: s.type, platformId: s.platformId, query: s.query });
     }
   }, 45000);
 }
