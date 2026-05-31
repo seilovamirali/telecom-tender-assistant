@@ -151,6 +151,11 @@ function renderSearchResults(results, query, filters) {
   const cards = results.map(({ platform: p, url }) => {
     const meta  = GROUP_META[p.group];
     const color = colorMap[p.group];
+    const authBadge = p.auth === true
+      ? `<span class="rc-auth-badge rc-auth-required" title="Требуется авторизация/ЭЦП">🔐 Авторизация</span>`
+      : p.auth === 'reg'
+      ? `<span class="rc-auth-badge rc-auth-reg" title="Нужна регистрация поставщика">📋 Регистрация</span>`
+      : '';
     return `
       <div class="result-card" style="--card-accent:${color}">
         <div class="rc-group-label" style="color:${color}">
@@ -158,6 +163,7 @@ function renderSearchResults(results, query, filters) {
           ${meta.label}${p.tag ? ` <span class="platform-tag tag-api" style="margin-left:2px">${p.tag}</span>` : ''}
         </div>
         <div class="rc-name">${p.name}</div>
+        ${authBadge}
         <div class="rc-actions">
           <a class="rc-btn rc-btn-open" href="${url}" target="_blank">↗ Открыть</a>
           <button class="rc-btn rc-btn-preview" onclick="openDrawer('${p.id}','${escAttr(query)}')">Превью</button>

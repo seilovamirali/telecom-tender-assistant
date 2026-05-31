@@ -909,6 +909,29 @@ body {
 .key-status.ok { color: var(--accent); }
 .key-status.err { color: var(--danger); }
 
+/* ── Auth badges on result cards ── */
+.rc-auth-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  margin-bottom: 7px;
+  letter-spacing: 0.02em;
+}
+.rc-auth-required {
+  background: #FEF2F2;
+  color: #B91C1C;
+  border: 1px solid #FECACA;
+}
+.rc-auth-reg {
+  background: #FFFBEB;
+  color: #92400E;
+  border: 1px solid #FDE68A;
+}
+
 /* ── Export btn ── */
 .export-btn {
   display: inline-flex;
